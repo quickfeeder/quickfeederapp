@@ -1,24 +1,25 @@
-// pages/dashboard.tsx
+// pages/dashboard.tsx (Pages Router example)
 
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-
+import type { GetServerSideProps } from "next";
 import React from "react";
-import { withServerSideAuth } from "@clerk/nextjs/ssr";
+import { getCookie } from "cookies-next";
+import jwt from "jsonwebtoken";
 
-export default function DashboardPage() {
-  return (
-    <div className="p-8">
-      <SignedIn>
-        <h1 className="text-2xl font-bold">Welcome to your dashboard!</h1>
-        <UserButton />
-        {/* Your protected content */}
-      </SignedIn>
-      <SignedOut>
-        <p>Please <a href="/login" className="text-blue-600">sign in</a> to continue.</p>
-      </SignedOut>
-    </div>
-  );
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const token = getCookie("auth_token", { req, res }) as string | undefined;
+  if (!token) {
+    return { redirect: { destination: "/login", permanent: false } };
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    // you can pass payload.userId into props or fetch more user data here
+    return { props: {} };
+  } catch {
+    return { redirect: { destination: "/login", permanent: false } };
+  }
+};
+
+export default function Dashboard() {
+  return <div>🔒 Protected Dashboard</div>;
 }
-
-// This runs on each request and redirects to /login if not signed in
-export const getServerSideProps = withServerSideAuth();

@@ -1,8 +1,14 @@
-@import "tailwindcss/preflight";
-@tailwind utilities;
-@tailwind utilities;
+/* src/styles/global.css */
 
-/* You can add your own global styles below if needed */
-body {
-  @apply bg-gray-50 text-gray-900;
+/* import all of Tailwind v4’s layers in one call */
+@import "tailwindcss";
+
+/* now add your own base-layer overrides if you like */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased dark:bg-gray-900 dark:text-gray-200;
+  }
 }
